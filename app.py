@@ -4,8 +4,6 @@ import pandas as pd
 import time
 import plotly.express as px
 from datetime import datetime, timedelta, timezone 
-import numpy as np
-import io
 import requests
 import base64  
 
@@ -563,9 +561,7 @@ elif page == "Achievements & Extras":
         "🎵 Fun Zone",
     ])
 
-# ============================================================
     # 🏅 Certificates
-    # ============================================================
     with tabs[0]:
         st.subheader("🏅 Certificates")
         st.markdown("Click on any certificate to view or download the file.")
@@ -575,7 +571,7 @@ elif page == "Achievements & Extras":
                 "title": "Youth Hackathon 2025 (Certificate of Participation)",
                 "issuer": "UNESCO",
                 "year": "Issued: Oct 2025",
-                "file": "unesco_certificaate.pdf"
+                "file": "unesco_certificate.pdf"
             },
             {
                 "title": "Introduction to Python",
@@ -711,7 +707,7 @@ elif page == "Achievements & Extras":
         - 🎬 **Favorite Series:** The 100 
         - 💭 **Fun Fact:** I find frogs cute
         """)
-         
+
         st.markdown("---")
         st.markdown("### Media & Sample Work")
         
