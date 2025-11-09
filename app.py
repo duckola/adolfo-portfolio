@@ -255,7 +255,7 @@ profile_img = load_local_image(
     fallback_url="https://i.imgur.com/5cOaVTD.png",
 )
 if profile_img is not None:
-    st.sidebar.image(profile_img, caption="Adolfo", use_container_width=True)
+    st.sidebar.image(profile_img, caption="Lee Jasmin R. Adolfo", use_container_width=True)
 
 accent_choice = st.sidebar.selectbox("Accent color", list(ACCENT_COLORS.keys()), index=0)
 inject_css(ACCENT_COLORS[accent_choice])
