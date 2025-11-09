@@ -3,18 +3,16 @@ from PIL import Image
 import pandas as pd
 import time
 import plotly.express as px
-from datetime import datetime, timedelta, timezone  # Correct imports
+from datetime import datetime, timedelta, timezone 
 import numpy as np
 import io
 import requests
-import base64  # <--- ADD THIS LINE
+import base64  
 
 GITHUB_USER = "duckola"
 GITHUB_TOKEN = st.secrets.get("GITHUB_TOKEN", None)
 
-# ============================================================
 # Page Config
-# ============================================================
 st.set_page_config(
     page_title="Adolfo | Autobiography & Portfolio",
     page_icon="🌟",
@@ -22,9 +20,6 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# ============================================================
-# Theming / Custom CSS (simple, tasteful accents)
-# ============================================================
 ACCENT_COLORS = {
     "Violet": "#7c3aed",
     "Blue": "#2563eb",
@@ -54,9 +49,7 @@ def inject_css(accent: str) -> None:
         unsafe_allow_html=True,
     )
 
-# ============================================================
 # Utilities
-# ============================================================
 @st.cache_data(show_spinner=False)
 def load_local_image(path: str, fallback_url: str = "") -> Image.Image | None:
     try:
@@ -84,7 +77,6 @@ def load_file_bytes(path: str) -> bytes | None:
 def get_github_monthly_commits(username, months=6):
     """Fetch monthly commit counts from a user's public GitHub repos."""
     
-    # FIX: Add auth headers if token is available in st.secrets
     headers = {}
     if "GITHUB_TOKEN" in st.secrets and st.secrets["GITHUB_TOKEN"]:
         headers["Authorization"] = f"token {st.secrets['GITHUB_TOKEN']}"
@@ -95,7 +87,6 @@ def get_github_monthly_commits(username, months=6):
     try:
         # Get user repos
         repos_url = f"https://api.github.com/users/{username}/repos"
-        # FIX: Pass headers to request
         repos_response = requests.get(repos_url, headers=headers)
         repos_response.raise_for_status()
         repos = repos_response.json()
@@ -112,7 +103,6 @@ def get_github_monthly_commits(username, months=6):
             commits_url = f"https://api.github.com/repos/{username}/{repo_name}/commits"
             params = {"since": start_date.isoformat(), "until": end_date.isoformat()}
             
-            # FIX: Pass headers to request
             commits_response = requests.get(commits_url, params=params, headers=headers)
             
             if commits_response.status_code == 200:
@@ -125,7 +115,7 @@ def get_github_monthly_commits(username, months=6):
         # Build DataFrame
         if not monthly_counts:
             print("ℹ️ No commits found for user.")
-            return None  # Triggers the 'else' block on the portfolio page
+            return None  
 
         df = pd.DataFrame(list(monthly_counts.items()), columns=["Month", "Commits"])
         df["Month"] = pd.to_datetime(df["Month"])
@@ -133,12 +123,11 @@ def get_github_monthly_commits(username, months=6):
         return df
 
     except Exception as e:
-        # FIX: Print a more specific error
         if "403" in str(e):
             print("❌ GitHub fetch error: 403 Forbidden. Likely rate-limited. Add a GITHUB_TOKEN to st.secrets.")
         else:
             print(f"❌ GitHub fetch error: {e}")
-        return None  # Triggers the 'else' block on the portfolio page
+        return None  
 
 
 def load_file_bytes(path: str) -> bytes | None:
@@ -161,10 +150,8 @@ def display_pdf(file_path):
         st.warning(f"Certificate file not found: {file_path}. Make sure it's in the same folder as your app.")
     except Exception as e:
         st.error(f"Error displaying PDF: {e}")
-# ============================================================
-# GitHub Data Fetch + Streak Logic
-# ============================================================
 
+# GitHub Data Fetch + Streak Logic
 def get_repo_count(user: str, use_token=True) -> int:
     """Return total number of non-fork repos, authenticated if possible."""
     headers = {"Accept": "application/vnd.github+json"}
@@ -255,9 +242,7 @@ if "visits" not in st.session_state:
     st.session_state["visits"] = 0
 st.session_state["visits"] += 1
 
-# ============================================================
 # Sidebar
-# ============================================================
 st.sidebar.title("Navigation")
 page = st.sidebar.radio(
     "Go to:",
@@ -304,7 +289,6 @@ st.sidebar.markdown("---")
 st.sidebar.caption("👋 Created with ❤ using Streamlit • Visits: " + str(st.session_state["visits"]))
 
 # ============================================================
-# Header / Hero
 st.markdown(
     """
     <div class="accent-bg" style="margin-bottom: 24px;">
@@ -320,7 +304,6 @@ st.markdown(
 # ============================================================
 # Pages
 # ============================================================
-
 
 if page == "Home":
     # --- GitHub stats ---
@@ -362,11 +345,9 @@ if page == "Home":
     with c3:
         st.markdown("<div class='card'><b>Now Learning</b><br/><span class='muted'>LLM tooling, Plotly, Game Development, Web Development</span></div>", unsafe_allow_html=True)
 
-    # Tiny dataset from GitHub API + chart + dataframe
     st.markdown("### Recent Activity")
     df = get_github_monthly_commits("duckola", months=5)
     
-    # --- Check required for Home page as well ---
     if df is not None and not df.empty:
         chart = px.bar(df, x="Month", y="Commits", title="Monthly commits (GitHub public activity)")
         c_left, c_right = st.columns([2, 1])
@@ -377,7 +358,7 @@ if page == "Home":
     else:
         st.info("No recent PushEvent commits found (or rate-limited). Try again later or add a GitHub token in st.secrets as GITHUB_TOKEN for higher limits.")
 
-    # Map demo
+    # Map
     st.markdown("### 🌏 Places I Love")
 
     # --- Try to get user's live location ---
@@ -412,7 +393,7 @@ elif page == "Autobiography":
     # --- MAIN LAYOUT ---
     col1, col2 = st.columns([1, 2], gap="large")
 
-    # LEFT COLUMN - PROFILE INFO (Stays the same)
+    # LEFT COLUMN - PROFILE INFO 
     with col1:
         st.image(
             profile_img if profile_img is not None else "https://i.imgur.com/5cOaVTD.png",
@@ -438,7 +419,7 @@ elif page == "Autobiography":
         </div>
         """, unsafe_allow_html=True)
 
-    # RIGHT COLUMN - THE NARRATIVE STORY
+    # RIGHT COLUMN 
     with col2:
         st.subheader("Hello! 👋")
         st.write("""
@@ -463,37 +444,7 @@ elif page == "Autobiography":
 elif page == "Portfolio":
     st.header("🗂️ My Portfolio")
     st.markdown("Here is a selection of my featured projects. Click any title to visit the GitHub repository.")
-
-    st.markdown("""
-    <style>
-    .card {
-        background-color: #262730;
-        padding: 18px;
-        border-radius: 14px;
-        margin-bottom: 18px;
-        transition: all 0.3s ease;
-        box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.25);
-        height: 200px; /* Uniform height */
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-    }
-    .card:hover {
-        background-color: #31333F;
-        transform: translateY(-5px);
-        box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.35);
-    }
-    .muted {
-        color: #AAAAAA;
-        font-size: 0.9em;
-        flex-grow: 1; /* Makes descriptions take space evenly */
-    }
-    a {
-        text-decoration: none;
-    }
-    </style>
-    """, unsafe_allow_html=True)
-
+ 
     projects = [
         {
             "name": "🌸 Bloom",
@@ -545,7 +496,6 @@ elif page == "Portfolio":
         },
     ]
 
-    # --- Create grid layout ---
     cols = st.columns(2)
     for i, p in enumerate(projects):
         with cols[i % 2]:
@@ -563,7 +513,6 @@ elif page == "Portfolio":
             """
             st.markdown(card_html, unsafe_allow_html=True)
 
-    # --- Design Posters ---
     st.markdown("---")
     st.subheader("🎨 Design Works")
     st.image(
@@ -614,9 +563,7 @@ elif page == "Achievements & Extras":
         "🎵 Fun Zone",
     ])
 
-    # ============================================================
-    # 🏅 Certificates
-    # ============================================================
+    #Certificates
     with tabs[0]:
         st.subheader("🏅 Certificates")
         st.markdown("Click on any certificate to view the file.")
@@ -640,6 +587,12 @@ elif page == "Achievements & Extras":
                 "year": "Issued: Sep 2024",
                 "file": "canva_certificate.pdf"
             },
+            {
+                "title": "Youth Hackathon 2025 (Certificate of Participation)",
+                "issuer": "UNESCO",
+                "year": "Issued: Oct 2025",
+                "file": "unesco_certificate.pdf" 
+            }
         ]
 
         for c in certs:
@@ -658,9 +611,7 @@ elif page == "Achievements & Extras":
                     # Fallback for certs without a file
                     st.info("No certificate file available to display for this entry.")
 
-    # ============================================================
-    # 💡 Hackathons Joined
-    # ============================================================
+    # Hackathons Joined
     with tabs[1]:
         st.subheader("💡 Hackathons & Competitions")
         
@@ -677,9 +628,8 @@ elif page == "Achievements & Extras":
         
         for h in hackathons:
             st.markdown(f"<div class='card'><b>{h['name']}</b><br/><span class='muted'>{h['desc']}</span></div>", unsafe_allow_html=True)            
-    # ============================================================
-    # 🏛️ Organizations
-    # ============================================================
+
+    # Organizations
     with tabs[2]:
         st.subheader("🏛️ Organizations Joined")
         
@@ -702,9 +652,7 @@ elif page == "Achievements & Extras":
             st.markdown(f"<div class='card'><b>{o['name']}</b><br/><span class='muted'>{o['role']}</span></div>", unsafe_allow_html=True)
     
     
-    # ============================================================
-    # 🎓 Academic Achievements
-    # ============================================================
+    # Academic Achievements
     with tabs[3]:
         st.subheader("🎓 Academic Achievements")
         
@@ -739,9 +687,7 @@ elif page == "Achievements & Extras":
         for t in timeline:
             st.markdown(f"<div class='card'><b>{t['year']}</b><br/><span class='muted'>{t['achievement']}</span></div>", unsafe_allow_html=True)
 
-    # ============================================================
-    # 🎵 Fun Zone
-    # ============================================================
+    # Fun Zone
     with tabs[4]:
         st.subheader("🎵 Fun Zone — The Human Behind the Code 💖")
         st.markdown("""
