@@ -575,7 +575,7 @@ elif page == "Achievements & Extras":
                 "title": "Youth Hackathon 2025 (Certificate of Participation)",
                 "issuer": "UNESCO",
                 "year": "Issued: Oct 2025",
-                "file": "image_9cc4a6.png"
+                "file": "unesco_certificaate.pdf"
             },
             {
                 "title": "Introduction to Python",
@@ -624,7 +624,7 @@ elif page == "Achievements & Extras":
                         st.error(f"Error processing file: {e}")
                 else:
                     st.info("No certificate file available to display for this entry.")
-                    
+
     # Hackathons Joined
     with tabs[1]:
         st.subheader("💡 Hackathons & Competitions")
