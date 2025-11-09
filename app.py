@@ -563,12 +563,20 @@ elif page == "Achievements & Extras":
         "🎵 Fun Zone",
     ])
 
-    #Certificates
+# ============================================================
+    # 🏅 Certificates
+    # ============================================================
     with tabs[0]:
         st.subheader("🏅 Certificates")
-        st.markdown("Click on any certificate to view the file.")
+        st.markdown("Click on any certificate to view or download the file.")
         
         certs = [
+            {
+                "title": "Youth Hackathon 2025 (Certificate of Participation)",
+                "issuer": "UNESCO",
+                "year": "Issued: Oct 2025",
+                "file": "image_9cc4a6.png"
+            },
             {
                 "title": "Introduction to Python",
                 "issuer": "Sololearn",
@@ -587,12 +595,6 @@ elif page == "Achievements & Extras":
                 "year": "Issued: Sep 2024",
                 "file": "canva_certificate.pdf"
             },
-            {
-                "title": "Youth Hackathon 2025 (Certificate of Participation)",
-                "issuer": "UNESCO",
-                "year": "Issued: Oct 2025",
-                "file": "unesco_certificate.pdf" 
-            }
         ]
 
         for c in certs:
@@ -600,17 +602,29 @@ elif page == "Achievements & Extras":
             
             with st.expander(expander_title):
                 if c['file']:
-                    # Check file type
-                    if c['file'].endswith(".pdf"):
-                        display_pdf(c['file']) 
-                    elif c['file'].endswith((".jpg", ".png", ".jpeg")):
-                        st.image(c['file'], use_container_width=True)
-                    else:
-                        st.info(f"Cannot display this file type: {c['file']}")
+                    try:
+                        if c['file'].endswith((".jpg", ".png", ".jpeg")):
+                            st.image(c['file'], use_container_width=True)
+                        
+                        elif c['file'].endswith(".pdf"):
+                            pdf_bytes = load_file_bytes(c['file'])
+                            if pdf_bytes:
+                                st.download_button(
+                                    label=f"Download {c['file']}",
+                                    data=pdf_bytes,
+                                    file_name=c['file'],
+                                    mime="application/pdf"
+                                )
+                            else:
+                                st.warning(f"Could not load file: {c['file']}")
+                                
+                    except FileNotFoundError:
+                        st.warning(f"Certificate file not found: {c['file']}. Make sure it's in the same folder as your app.")
+                    except Exception as e:
+                        st.error(f"Error processing file: {e}")
                 else:
-                    # Fallback for certs without a file
                     st.info("No certificate file available to display for this entry.")
-
+                    
     # Hackathons Joined
     with tabs[1]:
         st.subheader("💡 Hackathons & Competitions")
